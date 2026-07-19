@@ -1,4 +1,4 @@
-const CACHE = 'case-anna-2.3.0';
+const CACHE = 'case-anna-2.4.0';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', event => {
