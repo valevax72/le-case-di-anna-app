@@ -36,7 +36,7 @@
 <main id="loginView"><h1>Le Case di Anna</h1><button id="loginButton" class="google-button" type="button">Accedi con Google</button><p id="authMessage" role="alert"></p></main>
 
 <div id="appView">
-  <header class="app-header"><div class="brand"><h1>💜 Le Case di Anna</h1><small>v2.7.0</small></div><div class="header-actions"><a id="reviewBell" class="review-bell" href="https://script.google.com/macros/s/AKfycbypjvNeTR3esmu-S3nEGhMSqhNgSrr3kpUekB0Q0UoUVWfp7SKjvkswidiOZ5HQaPnn/exec" target="_blank" rel="noopener noreferrer" aria-label="Nessun elemento da verificare" hidden>🔔<span id="reviewBadge" class="review-badge" hidden></span></a><button id="logoutButton" class="logout-button" type="button">Esci da Google</button></div></header>
+  <header class="app-header"><div class="brand"><h1>💜 Le Case di Anna</h1><small>v2.7.1</small></div><div class="header-actions"><a id="reviewBell" class="review-bell" href="https://script.google.com/macros/s/AKfycbypjvNeTR3esmu-S3nEGhMSqhNgSrr3kpUekB0Q0UoUVWfp7SKjvkswidiOZ5HQaPnn/exec" target="_blank" rel="noopener noreferrer" aria-label="Nessun elemento da verificare" hidden>🔔<span id="reviewBadge" class="review-badge" hidden></span></a><button id="logoutButton" class="logout-button" type="button">Esci da Google</button></div></header>
   <p id="dataStatus" class="data-status" role="status">Caricamento dei dati validati…</p>
   <nav class="app-nav" aria-label="Navigazione principale">
     <button class="active" data-target="home"><span class="icon">🏠</span><span>Home</span></button>
@@ -122,10 +122,10 @@ const parsePaymentMetadata=value=>{try{const parsed=JSON.parse(String(value||'')
 function selectPublishedRows(headers,rows){
   const statusIndex=findIndex(headers,['Stato pubblicazione']),groupIndex=findIndex(headers,['Gruppo alternative ID','gruppo_alternative_id']),metadataIndex=findIndex(headers,['Metadati pagamento JSON','metadati_pagamento_json']);
   if(statusIndex<0)throw new Error('Nel foglio manca la colonna “Stato pubblicazione”.');
-  const approved=rows.filter(row=>String(row[statusIndex]||'').trim()===PUBLISH_STATUS);
-  if(groupIndex<0||metadataIndex<0)return approved;
+  if(groupIndex<0||metadataIndex<0)return rows.filter(row=>String(row[statusIndex]||'').trim()===PUBLISH_STATUS);
   const pointers=new Map();
-  approved.forEach(row=>{const metadata=parsePaymentMetadata(raw(row,metadataIndex)),groupId=raw(row,groupIndex);if(groupId&&metadata?.type==='GROUP_POINTER')pointers.set(groupId,metadata)});
+  rows.forEach(row=>{const metadata=parsePaymentMetadata(raw(row,metadataIndex)),groupId=raw(row,groupIndex);if(groupId&&metadata?.type==='GROUP_POINTER')pointers.set(groupId,metadata)});
+  const approved=rows.filter(row=>String(row[statusIndex]||'').trim()===PUBLISH_STATUS);
   return approved.filter(row=>{const groupId=raw(row,groupIndex),metadata=parsePaymentMetadata(raw(row,metadataIndex));if(!groupId)return true;if(!metadata)return true;if(metadata.type==='GROUP_POINTER')return false;if(metadata.type!=='PAYMENT_OPTION')return true;const pointer=pointers.get(groupId);return Boolean(pointer&&metadata.active===true&&Number(metadata.version)===Number(pointer.activeVersion))});
 }
 function buildRecords(headers,rows){
